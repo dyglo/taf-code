@@ -28,7 +28,7 @@ from .utils.session import (
 from .tools.implementations import get_working_dir, set_working_dir
 
 
-VERSION = "1.0.0"
+VERSION = "1.0.2"
 
 
 # ─── Signal Handling ──────────────────────────────────────────────────────────
@@ -271,18 +271,18 @@ def run_print_mode(
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        prog="gemini-code",
-        description="Gemini Code — AI-powered coding assistant for your terminal",
+        prog="taf",
+        description="TAF Code — AI-powered coding assistant for your terminal",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  gemini-code                          Start interactive session
-  gemini-code "explain this project"   Start with initial prompt
-  gemini-code -p "fix the bug"         Non-interactive (print mode)
-  cat file.py | gemini-code -p "review this"  Process piped input
-  gemini-code -c                       Continue last session
-  gemini-code -r my-session            Resume named session
-  gemini-code config --api-key KEY     Set API key
+  taf                          Start interactive session
+  taf "explain this project"   Start with initial prompt
+  taf -p "fix the bug"         Non-interactive (print mode)
+  cat file.py | taf -p "review this"  Process piped input
+  taf -c                       Continue last session
+  taf -r my-session            Resume named session
+  taf config --api-key KEY     Set API key
         """,
     )
 
@@ -322,13 +322,13 @@ Examples:
                         help="Set working directory")
 
     # Version
-    parser.add_argument("-v", "--version", action="version", version=f"gemini-code {VERSION}")
+    parser.add_argument("-v", "--version", action="version", version=f"taf {VERSION}")
 
     # Subcommands
     subparsers = parser.add_subparsers(dest="subcommand")
 
     # config subcommand
-    config_parser = subparsers.add_parser("config", help="Configure Gemini Code")
+    config_parser = subparsers.add_parser("config", help="Configure TAF Code")
     config_parser.add_argument("--api-key", metavar="KEY", help="Set Gemini API key")
     config_parser.add_argument("--model", metavar="MODEL", help="Set default model")
     config_parser.add_argument("--show", action="store_true", help="Show current config")
@@ -356,7 +356,7 @@ Examples:
     elif args.subcommand == "update":
         console.print("[gemini.dim]Checking for updates...[/gemini.dim]")
         console.print(f"[gemini.dim]Current version: {VERSION}[/gemini.dim]")
-        console.print("[gemini.dim]Visit https://github.com/gemini-code/gemini-code for updates.[/gemini.dim]")
+        console.print("[gemini.dim]Visit https://github.com/dyglo/taf-code for updates.[/gemini.dim]")
         return
 
     # ─── Load config ──────────────────────────────────────────────────────────
@@ -385,12 +385,12 @@ Examples:
     api_key = config.get("api_key") or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
     if not api_key:
         err_console.print(
-            "[gemini.error]No API key found.[/gemini.error]\n"
-            "Set your Gemini API key with:\n"
-            "  [bold]gemini-code config --api-key YOUR_KEY[/bold]\n"
-            "Or set the environment variable:\n"
-            "  [bold]export GEMINI_API_KEY=YOUR_KEY[/bold]\n"
-            "\nGet a free API key at: [link]https://aistudio.google.com/apikey[/link]"
+            "[gemini.error]No API key found.[/gemini.error]\\n"
+            "Set your Gemini API key with:\\n"
+            "  [bold]taf config --api-key YOUR_KEY[/bold]\\n"
+            "Or set the environment variable:\\n"
+            "  [bold]export GEMINI_API_KEY=YOUR_KEY[/bold]\\n"
+            "\\nGet a free API key at: [link]https://aistudio.google.com/apikey[/link]"
         )
         sys.exit(1)
 
