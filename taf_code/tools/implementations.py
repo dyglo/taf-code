@@ -271,37 +271,76 @@ def grep(
 
 # ─── Shell / Execution Tools ──────────────────────────────────────────────────
 
-def bash(command: str, timeout: int = 30, working_dir: Optional[str] = None) -> dict:
-    """Execute a shell command."""
+def bash(command: str, timeout: int = 60, working_dir: Optional[str] = None) -> dict:
+    """Execute a shell command with real-time output and stdin support for interactive prompts."""
     try:
         cwd = working_dir if working_dir else _working_dir
-        timeout = min(max(1, timeout), 300)
+        timeout = min(max(1, timeout), 600)
 
-        result = subprocess.run(
+        # We use a method that allows real-time passthrough for interactive prompts (like Y/n)
+        # while still capturing output for the AI to see.
+        import sys
+        
+        # Determine if we're in a TTY
+        is_tty = sys.stdin.isatty() and sys.stdout.isatty()
+        
+        # For commands like 'npx', we can't easily capture AND allow interactive input 
+        # perfectly in a simple subprocess.run(capture_output=True).
+        # We'll use a slightly different approach:
+        
+        process = subprocess.Popen(
             command,
             shell=True,
-            capture_output=True,
-            text=True,
             cwd=cwd,
-            timeout=timeout,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdin=sys.stdin if is_tty else None,
+            text=True,
             env={**os.environ, "TERM": "xterm-256color"},
+            bufsize=1, # Line buffered
         )
 
+        stdout_acc = []
+        stderr_acc = []
+
+        def read_stream(stream, accumulator, prefix=""):
+            for line in stream:
+                accumulator.append(line)
+                # We don't print to console here because main.py handles display 
+                # after the tool returns, but for INTERACTIVE commands, 
+                # this is where they usually hang. 
+
+        import threading
+        t1 = threading.Thread(target=read_stream, args=(process.stdout, stdout_acc))
+        t2 = threading.Thread(target=read_stream, args=(process.stderr, stderr_acc))
+        t1.start()
+        t2.start()
+
+        try:
+            exit_code = process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            return {"error": f"Command timed out after {timeout} seconds", "command": command}
+        
+        t1.join()
+        t2.join()
+
+        stdout = "".join(stdout_acc)
+        stderr = "".join(stderr_acc)
+
         output = {
-            "stdout": result.stdout,
-            "stderr": result.stderr,
-            "exit_code": result.returncode,
+            "stdout": stdout,
+            "stderr": stderr,
+            "exit_code": exit_code,
             "command": command,
         }
 
         # Truncate very long outputs
         max_output = 20000
-        if len(result.stdout) > max_output:
-            output["stdout"] = result.stdout[:max_output] + f"\n... [truncated, {len(result.stdout)} total chars]"
+        if len(stdout) > max_output:
+            output["stdout"] = stdout[:max_output] + f"\n... [truncated, {len(stdout)} total chars]"
             output["truncated"] = True
-        if len(result.stderr) > max_output:
-            output["stderr"] = result.stderr[:max_output] + f"\n... [truncated, {len(result.stderr)} total chars]"
-
+        
         return output
     except subprocess.TimeoutExpired:
         return {"error": f"Command timed out after {timeout} seconds", "command": command}

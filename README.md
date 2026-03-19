@@ -1,56 +1,52 @@
-# TAF Code
+# TAF Code — Terminal Assistant Framework
 
-**TAF Code** is an AI-powered coding assistant for your terminal, meticulously designed to provide a premium user experience with a Claude Code-style interface. Powered by Google's Gemini models, it allows you to build, debug, and understand your codebase directly from your CLI.
+![TAF Code Banner](https://github.com/dyglo/taf-code/blob/main/taf-logo.png?raw=true)
 
-![TAF Code Banner](https://github.com/dyglo/taf-code/blob/main/.github/preview.png?raw=true)
+TAF Code is a premium, AI-powered coding assistant designed to live in your terminal. It provides a highly interactive experience with rich UI components, real-time feedback, and powerful file-system tools.
 
 ## Key Features
 
 - ╭──╮ **Bordered Input Box**: A focused, premium command-line experience.
-- ⚙ **Inline Diffs**: View code changes immediately with color-coded additions/removals and context line numbers.
 - ⌛ **Real-time Spinner**: Animated processing indicator with an elapsed timer for all operations.
 - ⚡ **Rich Markdown**: Clean terminal rendering of AI responses (bolding, lists, code blocks) without raw symbols.
 - 🚀 **NPM & Pip Ready**: Install it via your preferred package manager.
-- 📂 **Context Aware**: Deeply understands your project structure and files.
+- **Rich Inline Diffs**: Custom line-by-line diff previews for every file modification.
+- **Smart Update Checker**: Automatically notifies you when a new version of `taf-cli` is released on npm.
+- **Interactive Bash**: Support for TTY-based interactive commands (like `npx` or `git`) directly within the session.
 
 ## Installation
 
-### Via NPM (Recommended)
+### Via npm (Recommended)
 ```bash
 npm install -g taf-cli
 ```
 
-### Via Pip (For Developers)
+### Via pip
 ```bash
-pip install -e .
+pip install taf-code
 ```
 
 ## Usage
 
-Start the assistant by typing:
+Simply run:
 ```bash
 taf
 ```
-or 
+
+### Configuration
+Set your Gemini API key:
 ```bash
-taf-code
+taf config --api-key YOUR_KEY
 ```
 
-### Tips
-- Use `! <command>` for bash mode.
-- Use `/` to see available slash commands like `/help`, `/save`, or `/model`.
-- Use `\=` at the end of a line for a newline.
-
-## Configuration
-
-Set your Gemini API Key in your environment:
-```powershell
-$env:GEMINI_API_KEY="your-key-here"
-```
-or (Unix)
+### Managing Updates
+TAF Code checks for updates every 24 hours. To manually update at any time:
 ```bash
-export GEMINI_API_KEY="your-key-here"
+npm install -g taf-cli@latest
 ```
+
+### Tip: Interactive Commands
+When asking TAF Code to run commands like `npx create-next-app`, it will now correctly pass through your keyboard input for any interactive prompts (Y/n).
 
 ## License
 MIT

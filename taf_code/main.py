@@ -7,6 +7,7 @@ import os
 import sys
 import argparse
 import signal
+import time
 import json
 from pathlib import Path
 from typing import Optional
@@ -28,7 +29,7 @@ from .utils.session import (
 from .tools.implementations import get_working_dir, set_working_dir
 
 
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 
 
 # ─── Signal Handling ──────────────────────────────────────────────────────────
@@ -42,6 +43,51 @@ _config: dict = {}
 def _handle_sigint(sig, frame):
     """Handle Ctrl+C gracefully."""
     console.print("\n[dim](Interrupted. Press Ctrl+C again to exit, or continue typing.)[/dim]")
+
+
+def check_for_updates():
+    """
+    Check for updates on npm (cached for 24h).
+    Returns (latest_version, current_version) if update available, else (None, None).
+    """
+    cache_file = Path.home() / ".taf-code-update-cache"
+    now = time.time()
+    
+    # Check cache
+    if cache_file.exists():
+        try:
+            data = json.loads(cache_file.read_text())
+            if now - data.get("last_check", 0) < 86400: # 24 hours
+                latest = data.get("latest")
+                if latest and latest != VERSION:
+                    return latest, VERSION
+                return None, None
+        except:
+            pass
+
+    # No cache or expired — check npm
+    try:
+        import subprocess
+        # npm view taf-cli version returns just the version string
+        result = subprocess.run(
+            ["npm", "view", "taf-cli", "version"],
+            capture_output=True, text=True, timeout=10, shell=True
+        )
+        if result.returncode == 0:
+            latest = result.stdout.strip()
+            # Save to cache
+            cache_file.write_text(json.dumps({
+                "last_check": now,
+                "latest": latest
+            }))
+            if latest and latest != VERSION:
+                return latest, VERSION
+        else:
+            pass
+    except:
+        pass
+    
+    return None, None
 
 
 # ─── Main Interactive Loop ────────────────────────────────────────────────────
@@ -62,7 +108,14 @@ def run_interactive(
 
     signal.signal(signal.SIGINT, _handle_sigint)
 
+    # Check for updates in background or at startup
+    latest, current = check_for_updates()
+    
     print_welcome(engine.model_id, get_working_dir(), VERSION)
+    
+    if latest:
+        from .ui.renderer import print_update_notification
+        print_update_notification(current, latest)
 
     prompt_session = create_prompt_session(engine.model_id, get_working_dir())
 

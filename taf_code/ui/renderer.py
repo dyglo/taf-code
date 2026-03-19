@@ -83,6 +83,19 @@ def print_welcome(model_id: str, working_dir: str, version: str = "1.0.0"):
     console.print()
 
 
+def print_update_notification(current: str, latest: str):
+    """Display a centered notice if a new version is available on npm."""
+    table = Table(show_header=False, box=box.ROUNDED, border_style="bold yellow", padding=(0, 2))
+    table.add_column(justify="center")
+    table.add_row(f"[bold yellow]New update available![/bold yellow] [bold white]v{latest}[/bold white]")
+    table.add_row(f"[dim]Current version: v{current}[/dim]")
+    table.add_row("")
+    table.add_row("Run [bold cyan]npm install -g taf-cli@latest[/bold cyan] to update.")
+    
+    console.print(Columns([table], align="center", expand=True))
+    console.print()
+
+
 def print_separator(label: str = ""):
     if label:
         console.print(Rule(f"[gemini.dim]{label}[/gemini.dim]", style="gemini.dim"))
