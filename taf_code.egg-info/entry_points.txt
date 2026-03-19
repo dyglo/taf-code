@@ -1,0 +1,3 @@
+[console_scripts]
+taf = gemini_code.main:main
+taf-code = gemini_code.main:main

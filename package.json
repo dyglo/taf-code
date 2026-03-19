@@ -1,0 +1,14 @@
+{
+  "name": "taf-cli",
+  "version": "1.0.0",
+  "description": "TAF Code — AI-powered terminal assistant",
+  "bin": {
+    "taf": "./bin/taf",
+    "taf-code": "./bin/taf"
+  },
+  "scripts": {
+    "install": "pip install -e ."
+  },
+  "author": "Tafar",
+  "license": "MIT"
+}

@@ -1,0 +1,3 @@
+[console_scripts]
+gc = gemini_code.main:main
+gemini-code = gemini_code.main:main

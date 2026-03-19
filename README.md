@@ -1,0 +1,322 @@
+<!-- # Experimental AI Assistant -->
+# ◆ Gemini Code
+
+**An AI-powered coding assistant for your terminal, powered by Google Gemini.**
+
+Gemini Code brings the power of Gemini directly to your terminal — read and edit files, run shell commands, search codebases, fetch web documentation, and have multi-turn conversations about your code. Inspired by Claude Code, built for Gemini.
+
+---
+
+## Features
+
+| Capability | Description |
+|---|---|
+| **Multi-turn conversation** | Persistent context across your session with history management |
+| **File operations** | Read, write, and surgically edit files with targeted replacements |
+| **Shell execution** | Run any bash command — git, npm, pytest, make, etc. |
+| **Code search** | Glob pattern matching and regex grep across your codebase |
+| **Web access** | Fetch URLs and search the web for documentation |
+| **Task tracking** | Built-in todo list for complex multi-step work |
+| **Session persistence** | Save and resume sessions by name or ID |
+| **Project memory** | `GEMINI.md` loaded automatically for project context |
+| **Rich terminal UI** | Syntax highlighting, markdown rendering, streaming output |
+| **Slash commands** | 30+ built-in commands for session and tool control |
+| **Thinking mode** | Support for Gemini 3's native thinking/reasoning process |
+
+---
+
+## Installation
+
+### From source
+
+```bash
+git clone https://github.com/your-org/gemini-code
+cd gemini-code
+pip install -e .
+```
+
+### Requirements
+
+- Python 3.9+
+- A [Google Gemini API key](https://aistudio.google.com/apikey) (free tier available)
+
+---
+
+## Quick Start
+
+### 1. Set your API key
+
+```bash
+# Option A: Environment variable (recommended)
+export GEMINI_API_KEY=your_key_here
+# Or: export GOOGLE_API_KEY=your_key_here
+
+# Option B: Store in config
+gemini-code config --api-key your_key_here
+```
+
+### 2. Start coding
+
+```bash
+# Start interactive session (defaults to gemini-3-flash-preview)
+gemini-code
+
+# You can also use the short alias
+gc
+
+# Start with an initial prompt
+gemini-code "explain this codebase"
+
+# Non-interactive (print mode)
+gemini-code -p "what does main.py do?"
+
+# Process piped input
+cat error.log | gemini-code -p "what's causing this error?"
+
+# Continue last session
+gemini-code -c
+
+# Resume a named session
+gemini-code -r my-feature-work
+```
+
+---
+
+## Interactive Mode
+
+Once started, type any message to chat with Gemini. The model will automatically use tools as needed.
+
+### Slash Commands
+
+#### Session Management
+
+| Command | Description |
+|---|---|
+| `/clear` | Clear conversation history and start fresh |
+| `/compact [instructions]` | Compress conversation to save context |
+| `/save [name]` | Save current session |
+| `/sessions` | List all saved sessions |
+| `/resume <id\|name>` | Resume a saved session |
+| `/fork [name]` | Branch conversation into a new session |
+| `/rename <name>` | Rename the current session |
+| `/exit` / `/quit` | Exit Gemini Code |
+
+#### Information & Diagnostics
+
+| Command | Description |
+|---|---|
+| `/help` | Show all commands |
+| `/status` | Show session status (model, dir, turns) |
+| `/cost` | Show token usage for this session |
+| `/tasks` | Show current task checklist |
+| `/config` | Show current configuration |
+
+#### Model & Mode Control
+
+| Command | Description |
+|---|---|
+| `/model [name]` | Switch model or list available models |
+| `/verbose` | Toggle verbose tool output |
+| `/thinking` | Toggle display of model reasoning |
+
+#### File System
+
+| Command | Description |
+|---|---|
+| `/cd <path>` | Change working directory |
+| `/pwd` | Print current directory |
+| `/ls [path]` | List directory contents |
+| `/read <file>` | Read and display a file with syntax highlighting |
+| `/find <pattern>` | Find files by glob pattern |
+| `/grep <pattern>` | Search file contents with regex |
+
+#### Git & Shell
+
+| Command | Description |
+|---|---|
+| `/diff` | Show git diff |
+| `/git <args>` | Run any git command |
+| `/run <command>` | Run a shell command |
+| `/review` | Review recent git changes |
+
+#### Project Memory
+
+| Command | Description |
+|---|---|
+| `/memory` | View the GEMINI.md memory file |
+| `/init` | Initialize GEMINI.md for this project |
+
+### Shell Passthrough
+
+Prefix any command with `!` to run it directly in the shell:
+
+```
+◆ !npm test
+◆ !git status
+◆ !python -m pytest tests/
+```
+
+### Keyboard Shortcuts
+
+| Key | Action |
+|---|---|
+| `Ctrl+C` | Cancel current generation or interrupt |
+| `Ctrl+L` | Clear the terminal screen |
+| `Up` / `Down` | Navigate through input history |
+| `Tab` | Autocomplete slash commands |
+
+---
+
+## CLI Flags
+
+```
+gemini-code [OPTIONS] [PROMPT]
+
+Options:
+  -p, --print              Non-interactive print mode
+  -c, --continue           Continue most recent session
+  -r, --resume SESSION     Resume session by ID or name
+  -n, --name NAME          Name for this session
+  --model MODEL            Model to use
+  --output-format FORMAT   Output format: text or json (print mode)
+  --verbose                Enable verbose tool output
+  --thinking               Show model reasoning
+  --system-prompt PROMPT   Replace the system prompt
+  --append-system-prompt   Append to the system prompt
+  --add-dir DIR            Set working directory
+  -v, --version            Show version
+```
+
+**Subcommands:**
+- `config`: View or modify settings
+- `sessions`: List all saved conversation sessions
+- `update`: Check for the latest version
+
+---
+
+## Available Models
+
+| Model | Best For |
+|---|---|
+| `gemini-3-flash-preview` | **Default** — Fast, capable, frontier-class performance |
+| `gemini-3.1-pro-preview` | **Most Advanced** — Complex reasoning, agentic tasks |
+| `gemini-3.1-flash-lite-preview` | Ultra-fast and budget-friendly |
+| `gemini-2.5-flash-preview-04-17` | Reliable 2.5 series flash model |
+| `gemini-2.5-pro-preview-03-25` | Reliable 2.5 series pro model |
+
+Switch models mid-session with `/model <name>`.
+
+---
+
+## Tools Reference
+
+Gemini Code gives the model access to these tools:
+
+| Tool | Description | Requires Permission |
+|---|---|---|
+| `read_file` | Read file contents with optional line range | No |
+| `write_file` | Create or overwrite files | Yes |
+| `edit_file` | Targeted text replacement in files | Yes |
+| `list_directory` | List directory contents | No |
+| `glob` | Find files by pattern | No |
+| `grep` | Search file contents with regex | No |
+| `bash` | Execute shell commands | Yes |
+| `web_fetch` | Fetch URL content | Yes |
+| `web_search` | Search the web (DuckDuckGo) | Yes |
+| `todo_write` | Manage session task checklist | No |
+| `memory_write` | Write to GEMINI.md | Yes |
+
+---
+
+## Project Memory (GEMINI.md)
+
+Create a `GEMINI.md` file in your project root to give Gemini persistent context about your project:
+
+```markdown
+# My Project
+
+## Overview
+A FastAPI backend for a task management app.
+
+## Tech Stack
+- Python 3.11, FastAPI, SQLAlchemy, PostgreSQL
+- Tests with pytest
+
+## Conventions
+- Use type hints everywhere
+- Follow PEP 8
+- Tests go in tests/ directory
+
+## Important Files
+- `src/main.py` — App entry point
+- `src/models.py` — Database models
+- `src/api/` — API routes
+```
+
+Run `/init` to auto-generate one, or create it manually.
+
+---
+
+## Configuration
+
+Config is stored in `~/.gemini-code/config.json`:
+
+```json
+{
+  "model": "gemini-3-flash-preview",
+  "theme": "dark",
+  "verbose": false,
+  "show_thinking": false
+}
+```
+
+Sessions are stored in `~/.gemini-code/sessions/`.
+
+---
+
+## Examples
+
+### Understand a codebase
+
+```
+gemini-code "give me an overview of this project's architecture"
+```
+
+### Fix a bug
+
+```
+gemini-code "there's a KeyError in src/api/users.py when creating a user, fix it"
+```
+
+### Add a feature
+
+```
+gemini-code "add pagination to the /api/posts endpoint"
+```
+
+### Code review
+
+```
+gemini-code "/review"
+# or
+git diff | gemini-code -p "review these changes"
+```
+
+### Non-interactive scripting
+
+```bash
+# Generate a commit message
+git diff --staged | gemini-code -p "write a concise git commit message"
+
+# Explain an error
+cat error.log | gemini-code -p "what's causing this and how do I fix it?"
+
+# JSON output for scripting
+gemini-code -p "list all Python files" --output-format json
+```
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
