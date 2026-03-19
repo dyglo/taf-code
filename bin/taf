@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-from gemini_code.main import main
+from taf_code.main import main
 
 if __name__ == "__main__":
     sys.exit(main())
