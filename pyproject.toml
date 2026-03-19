@@ -32,8 +32,8 @@ dependencies = [
 ]
 
 [project.scripts]
-taf-code = "gemini_code.main:main"
-taf = "gemini_code.main:main"
+taf-code = "taf_code.main:main"
+taf = "taf_code.main:main"
 
 [project.urls]
 Homepage = "https://github.com/gemini-code/gemini-code"
@@ -41,4 +41,4 @@ Issues = "https://github.com/gemini-code/gemini-code/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["gemini_code*"]
+include = ["taf_code*"]

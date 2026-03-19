@@ -15,8 +15,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "gemini-code=gemini_code.main:main",
-            "gc=gemini_code.main:main",
+            "gemini-code=taf_code.main:main",
+            "gc=taf_code.main:main",
         ],
     },
 )
